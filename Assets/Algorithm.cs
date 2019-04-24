@@ -6,8 +6,13 @@ public class Algorithm : MonoBehaviour
 {
     Movement movement;
     Sensors sensors;
+    public GridMap grid;
+
+
 
     public int turnAmount = 0;
+
+    Vector2 gridPos = new Vector2(50,0);
     int turnCounter = 0;
     int turnTo = 1;
     // Start is called before the first frame update
@@ -16,70 +21,35 @@ public class Algorithm : MonoBehaviour
         movement = GetComponent<Movement>();
         sensors = GetComponent<Sensors>();
     }
+
+    void DrawGrid(float[] readings) {
+        int x1 = Mathf.RoundToInt(gridPos.x);
+        int y1 = Mathf.RoundToInt(gridPos.y);
+        int x2 = Mathf.RoundToInt(gridPos.x);
+        int y2 = Mathf.RoundToInt(gridPos.y + readings[4]*30);
+        print(y1);
+        print(y2);
+        List<Vector2> points = GridMap.bresenham(x1, y1, x2, y2);
+        Vector2 lastPoint = points[points.Count-1];
+
+        
+
+        foreach (Vector2 point in points) {
+            grid.SetPixel(Mathf.RoundToInt(point.x), Mathf.RoundToInt(point.y), System.Drawing.Color.White);
+        }
+
+        grid.SetPixel(Mathf.RoundToInt(lastPoint.x), Mathf.RoundToInt(lastPoint.y), System.Drawing.Color.Black);
+
+
+    }
+
     // turnTo 1 means left turnTo -1 means right.
     // 73 frames to turn 90 deg
     // Update is called once per frame
     void LateUpdate()
     {
-        if (turnCounter == 0)
-        {
-            // readings[4] is forward
-            float[] readings = sensors.GetReadings();
-            // If there is something right in front of us
-            // we turn the direction with more open space
-            if (readings[4] < .5)
-            {
-                // If there is more space to the right
-                if (readings[0] > readings[8])
-                {
-                    turnTo = -1;
-                    turnCounter = 73;
-                    turnAmount -= 1;
-                }
-                else {
-                    turnTo = 1;
-                    turnCounter = 73;
-                    turnAmount += 1;
-                }
 
-            }
-            // If we have turned before then we make some choices to try and turn back hopefully
-            else if(turnAmount != 0){
-                // If there is more space to the right and the slightly pointed backward to the right sensor gives enough space
-                // then we know we can safely turn back
-                if (readings[0] > readings[8] && readings[15] > .6 && turnAmount > 0)
-                {
-                    turnTo = -1;
-                    turnCounter = 73;
-                    turnAmount -= 1;
-                }
-                // Same as above but the other direction
-                else if (readings[0] < readings[8] && readings[9] > .6 && turnAmount < 0)
-                {
-                    turnTo = 1;
-                    turnCounter = 73;
-                    turnAmount += 1;
-                }
-                else {
-                    movement.PutMovement(1, 0);
-                }
-            }
-            else {
-                movement.PutMovement(1, 0);
-            }
-        }
-        else
-        {
-            if (turnTo == 1)
-            {
-                movement.PutMovement(0, 1);
-            }
-            else {
-                movement.PutMovement(0, -1);
-            }
-
-            turnCounter--;
-        }
+        DrawGrid(sensors.GetReadings());
         
     }
 }
