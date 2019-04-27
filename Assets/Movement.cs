@@ -32,7 +32,7 @@ public class Movement : MonoBehaviour
         // Magic PI/2 makes the forward vector "up" instead of "right" from world space prespective
         float x = Mathf.Cos(Mathf.Deg2Rad * rb2d.rotation + Mathf.PI/2);
         float y = Mathf.Sin(Mathf.Deg2Rad * rb2d.rotation + Mathf.PI/2);
-        Vector2 direction = new Vector2(x, y);
+        Vector2 direction = new Vector2(x, y).normalized;
         float fuzzedForward = forward + forward * Random.Range(-movementFuzzFactor, movementFuzzFactor);
         rb2d.MovePosition(rb2d.position + direction * speed * fuzzedForward);
     }

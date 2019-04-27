@@ -11,21 +11,43 @@ public class GridMap : MonoBehaviour
 
     public int width, height;
 
-    public System.Drawing.Color wallColor;
+
+    public UnityEngine.Color emptyUColor;
+    public UnityEngine.Color wallUColor;
+    public UnityEngine.Color unseenUColor;
+    public UnityEngine.Color robotUColor;
+    public UnityEngine.Color goalUColor;
+
+    private System.Drawing.Color emptyColor;
+    private System.Drawing.Color wallColor;
+    private System.Drawing.Color unseenColor;
+    private System.Drawing.Color robotColor;
+    private System.Drawing.Color goalColor;
 
     public UnityEngine.UI.Image uiImage;
+
+    public enum PixelStates { EMPTY, WALL, UNSEEN, ROBOT, GOAL};
     Bitmap image;
+
+
     // Start is called before the first frame update
     void Start()
     {
+        emptyColor = System.Drawing.Color.FromArgb((int)(emptyUColor.r*255), (int)(emptyUColor.g*255), (int)(emptyUColor.b*255));
+        wallColor = System.Drawing.Color.FromArgb((int)(wallUColor.r*255), (int)(wallUColor.g*255), (int)(wallUColor.b*255));
+        unseenColor = System.Drawing.Color.FromArgb((int)(unseenUColor.r*255), (int)(unseenUColor.g*255), (int)(unseenUColor.b*255));
+        robotColor = System.Drawing.Color.FromArgb((int)(robotUColor.r*255), (int)(robotUColor.g*255), (int)(robotUColor.b*255));
+        goalColor = System.Drawing.Color.FromArgb((int)(goalUColor.r*255), (int)(goalUColor.g*255), (int)(goalUColor.b*255));
+
         image = new Bitmap(width, height);
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                image.SetPixel(x, y, System.Drawing.Color.Blue);
+                SetPixel(x, y, PixelStates.UNSEEN);
             }
         }
+        
 
         List<Vector2Int> path = BFS(new Vector2Int(0, 0), new Vector2Int(10, 10));
 
@@ -45,8 +67,31 @@ public class GridMap : MonoBehaviour
 
     }
 
-    public void SetPixel(int x, int y, System.Drawing.Color color) {
-        if (x > 0 && x < width && y > 0 && y < height)
+    public void SetPixel(int x, int y, PixelStates state) {
+        System.Drawing.Color color;
+        switch (state)
+        {
+            case PixelStates.EMPTY:
+                color = emptyColor;
+                break;
+            case PixelStates.WALL:
+                color = wallColor;
+                break;
+            case PixelStates.UNSEEN:
+                color = unseenColor;
+                break;
+            case PixelStates.ROBOT:
+                color = robotColor;
+                break;
+            case PixelStates.GOAL:
+                color = goalColor;
+                break;
+            default:
+                throw new System.Exception("You can't use a pixel state that isn't implemented");
+                break;
+        }
+
+        if (x > 0 && x < width && y > 0 && y < height && image.GetPixel(x,y) != robotColor)
         {
             image.SetPixel(x, y, color);
         }
@@ -142,31 +187,4 @@ public class GridMap : MonoBehaviour
         }
         return adj;
     }
-    /*
-    public static List<Vector2> bresenham(int x1, int y1, int x2, int y2)
-    {
-        List<Vector2> points = new List<Vector2>();
-        int m_new = 2 * (y2 - y1);
-        int slope_error_new = m_new - (x2 - x1);
-
-        for (int x = x1, y = y1; x <= x2; x++)
-        {
-
-            points.Add(new Vector2(x, y));
-
-            // Add slope to increment angle formed 
-            slope_error_new += m_new;
-
-            // Slope error reached limit, time to 
-            // increment y and update slope error. 
-            if (slope_error_new >= 0)
-            {
-                y++;
-                slope_error_new -= 2 * (x2 - x1);
-            }
-        }
-
-        return points;
-    }
-    */
 }

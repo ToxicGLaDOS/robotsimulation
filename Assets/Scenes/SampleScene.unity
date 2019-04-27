@@ -894,6 +894,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 100
   height: 100
+  emptyUColor: {r: 0.28773582, g: 0.58051854, b: 1, a: 1}
+  wallUColor: {r: 1, g: 1, b: 1, a: 1}
+  unseenUColor: {r: 0, g: 0, b: 0, a: 1}
+  robotUColor: {r: 1, g: 0, b: 0, a: 1}
+  goalUColor: {r: 1, g: 0.3726415, b: 0.8796187, a: 1}
   uiImage: {fileID: 1490350620}
 --- !u!114 &1490350620
 MonoBehaviour:
@@ -1405,7 +1410,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grid: {fileID: 1490350619}
   wallGen: {fileID: 1829679594}
-  turnAmount: 0
   gridPixelWidth: 0
   gridPixelHeight: 0
+  goal: {fileID: 68458554}
   gridPos: {x: 0, y: 0}
+  turnTimer: 0
+  assumedRotation: 0
+  turning: 0
+  turnsToMake: 1

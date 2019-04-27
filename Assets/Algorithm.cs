@@ -12,24 +12,41 @@ public class Algorithm : MonoBehaviour
 
 
        
-    public int turnAmount = 0;
-
+    // The width and height in unity units of one pixel in the grid
     public float gridPixelWidth, gridPixelHeight;
-    public Vector2Int gridPos;
-    int turnCounter = 0;
-    int turnTo = 1;
-    float error = 0;
 
+    // A reference to the goal so we can get its position to calibrate the grid
+    public Goal goal;
+
+    // The position we believe we are on the grid
+    public Vector2Int gridPos;
+
+    // The number of frames left we need to turn for
     public int turnTimer = 0;
 
     // The amount we think we're rotated
     public float assumedRotation = 0;
 
+    // The maximum length a sensor can read before we consider it a wall
+    public float maxLengthToWall;
 
     // Variable to mark that we're turning and shouldn't do anything until it's done
     public bool turning = false;
-    int turnsToMake = 0;
 
+    // The number and direction of turns to make
+    public int turnsToMake = 0;
+
+    public Vector2Int facing = Vector2Int.up;
+
+    // This value keeps track of how far off from the grid we think we are
+    // this might happen, for example, because the grid is in 1 inch chunks, but we can only move in 1.5 inch increments
+    private float error = 0;
+
+    // Where the goal is on the grid
+    private Vector2Int goalPos;
+
+    // The path we are currently following
+    private List<Vector2Int> path;
 
     // Start is called before the first frame update
     void Start()
@@ -42,22 +59,28 @@ public class Algorithm : MonoBehaviour
         xmax = wallGen.xmax;
         ymax = 5;
 
+        // Hardcoded to 5% error allowance
+        maxLengthToWall = sensors.maxDist - sensors.maxDist * 0.05f;
+
         gridPixelWidth = (xmax - xmin) / grid.width;
         gridPixelHeight = (ymax - ymin) / grid.height;
 
-        int y = Mathf.RoundToInt((ymax - transform.position.y) / gridPixelHeight);
+        int y     = Mathf.RoundToInt((ymax - transform.position.y) / gridPixelHeight);
+        int goaly = Mathf.RoundToInt((ymax - goal.transform.position.y) / gridPixelHeight);
 
         gridPos = new Vector2Int(grid.width / 2, y);
+        goalPos = new Vector2Int(grid.width / 2, goaly);
 
-        turnsToMake = 1;
-        
+        grid.SetPixel(goalPos.x, goalPos.y, GridMap.PixelStates.GOAL);
+        grid.SetPixel(gridPos.x, gridPos.y, GridMap.PixelStates.ROBOT);
     }
 
     void DrawGrid(float[] readings) {
        
         for (int i = 0; i < readings.Length; i++)
         {
-            float angle = (2 * Mathf.PI / 16) * i;
+            // angle determines the angle we believe the sensor to be at
+            float angle = (2 * Mathf.PI / 16) * i + Mathf.Deg2Rad * assumedRotation;
             int x1 = Mathf.RoundToInt(gridPos.x);
             int y1 = Mathf.RoundToInt(gridPos.y);
             int x2 = Mathf.RoundToInt(x1 + Mathf.Cos(angle) * (readings[i] / gridPixelWidth));
@@ -68,10 +91,16 @@ public class Algorithm : MonoBehaviour
 
             foreach (Vector2Int point in points)
             {
-                grid.SetPixel(point.x, point.y, System.Drawing.Color.White);
+                grid.SetPixel(point.x, point.y, GridMap.PixelStates.EMPTY);
             }
 
-            grid.SetPixel(lastPoint.x, lastPoint.y, System.Drawing.Color.Black);
+            // If the sensor reads further than the max distance we consider the end to be empty
+            if(readings[i] > maxLengthToWall)
+                grid.SetPixel(lastPoint.x, lastPoint.y, GridMap.PixelStates.EMPTY);
+            // If the sensor reads closer than the max distance we consider it a wall
+            // this is because the max dist should be set lower than the error could produce on the robot
+            else
+                grid.SetPixel(lastPoint.x, lastPoint.y, GridMap.PixelStates.WALL);
         }
 
     }
@@ -87,6 +116,7 @@ public class Algorithm : MonoBehaviour
     }
 
     void Rotate() {
+        // Turning left 
         if (turnsToMake > 0)
         {
             movement.PutMovement(0, 1);
@@ -96,8 +126,10 @@ public class Algorithm : MonoBehaviour
             {
                 turning = false;
                 turnsToMake--;
+                facing = RotateVector(facing, 1);
             }
         }
+        // Turning right
         else if (turnsToMake < 0)
         {
             movement.PutMovement(0, 1);
@@ -107,6 +139,7 @@ public class Algorithm : MonoBehaviour
             {
                 turning = false;
                 turnsToMake++;
+                facing = RotateVector(facing, -1);
             }
         }
         else {
@@ -115,9 +148,39 @@ public class Algorithm : MonoBehaviour
         
     }
 
+    private Vector2Int RotateVector(Vector2Int v, int direction) {
+        if (direction == 1)
+        {
+            if (v.x == 1 && v.y == 0)
+                return new Vector2Int(0, 1);
+            else if (v.x == 0 && v.y == 1)
+                return new Vector2Int(-1, 0);
+            else if (v.x == -1 && v.y == 0)
+                return new Vector2Int(0, -1);
+            else if (v.x == 0 && v.y == -1)
+                return new Vector2Int(1, 0);
+            else
+                throw new System.Exception("You can't call rotate vector with a vector that isn't of the form ([01(-1)], [01(-1)]");
+        }
+        else if (direction == -1)
+        {
+            if (v.x == 1 && v.y == 0)
+                return new Vector2Int(0, -1);
+            else if (v.x == 0 && v.y == 1)
+                return new Vector2Int(1, 0);
+            else if (v.x == -1 && v.y == 0)
+                return new Vector2Int(0, 1);
+            else if (v.x == 0 && v.y == -1)
+                return new Vector2Int(-1, 0);
+            else
+                throw new System.Exception("You can't call rotate vector with a vector that isn't of the form ([01(-1)], [01(-1)]");
+        }
+        else {
+            throw new System.Exception("You can't call rotate vector with a direction that isn't -1 or 1.");
+        }
+    }
+
     // turnTo 1 means left turnTo -1 means right.
-    // 73 frames to turn 90 deg
-    // Update is called once per frame
     void FixedUpdate()
     {
 
@@ -136,7 +199,15 @@ public class Algorithm : MonoBehaviour
         // Handles logic for when we need to decide what to do
         else
         {
-            movement.PutMovement(0, 0);
+            List<Vector2Int> relPath = grid.BFS(gridPos, goalPos);
+            foreach (Vector2Int v in relPath) {
+                print(v);
+                // Rotate to the direction we need to go
+                while (v != facing) {
+                    Rotate(1);
+                }
+                Move(1, 0);
+            }
         }
     }
 }
