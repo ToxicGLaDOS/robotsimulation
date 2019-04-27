@@ -154,10 +154,8 @@ public class GridMap : MonoBehaviour
 
             foreach (Vertex w in Adjacent(vertex, discovered))
             {
-                if (!discovered.Contains(w)) {
-                    discovered.Add(w);
-                    queue.Enqueue(w);
-                }
+                discovered.Add(w);
+                queue.Enqueue(w);
 
             }
         }
@@ -176,13 +174,13 @@ public class GridMap : MonoBehaviour
         if (!discovered.Contains(right) && right.position.x < width && image.GetPixel(right.position.x, right.position.y) != wallColor) {
             adj.Add(right);
         }
-        if (!discovered.Contains(up) && up.position.y >= 0 && image.GetPixel(right.position.x, right.position.y) != wallColor) {
+        if (!discovered.Contains(up) && up.position.y >= 0 && image.GetPixel(up.position.x, up.position.y) != wallColor) {
             adj.Add(up);
         }
-        if (!discovered.Contains(left) && left.position.x >= 0 && image.GetPixel(right.position.x, right.position.y) != wallColor) {
+        if (!discovered.Contains(left) && left.position.x >= 0 && image.GetPixel(left.position.x, left.position.y) != wallColor) {
             adj.Add(left);
         }
-        if (!discovered.Contains(down) && down.position.y < height && image.GetPixel(right.position.x, right.position.y) != wallColor) {
+        if (!discovered.Contains(down) && down.position.y < height && image.GetPixel(down.position.x, down.position.y) != wallColor) {
             adj.Add(down);
         }
         return adj;

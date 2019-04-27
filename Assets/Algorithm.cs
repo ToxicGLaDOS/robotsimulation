@@ -33,9 +33,13 @@ public class Algorithm : MonoBehaviour
     // Variable to mark that we're turning and shouldn't do anything until it's done
     public bool turning = false;
 
+    // Variable to mark that we're moving and shouldn't be doing any logic
+    public bool moving = false;
+
     // The number and direction of turns to make
     public int turnsToMake = 0;
 
+    // Which way we're facing
     public Vector2Int facing = Vector2Int.up;
 
     // This value keeps track of how far off from the grid we think we are
@@ -47,6 +51,11 @@ public class Algorithm : MonoBehaviour
 
     // The path we are currently following
     private List<Vector2Int> path;
+
+    // The amount we have left to move in world space units
+    private float amountToMove = 0;
+
+    private bool getPath = true;
 
     // Start is called before the first frame update
     void Start()
@@ -105,13 +114,34 @@ public class Algorithm : MonoBehaviour
 
     }
 
-    void Move(float forward, float turn) {
-        movement.PutMovement(forward, turn);
-        error += movement.speed * forward / gridPixelHeight;
-        while (error > 1)
+    void MoveForward() {
+        // We need to move one grid pixel, so if we're facing right or left we need to go one pixel width
+        if (facing == Vector2Int.left || facing == Vector2Int.right)
+            amountToMove = gridPixelWidth;
+        // If we're facing up or down we need to go one pixel height
+        else
+            amountToMove = gridPixelHeight;
+
+        // If the amount we need to move is greater than the max we can move in one frame
+        // then we just move at full speed for this frame and subtract the amount we just moved from the amount we have left to do
+        if( amountToMove > movement.speed)
         {
-            gridPos += new Vector2Int(0, -1);
-            error--;
+            movement.PutMovement(1, 0);
+            amountToMove -= movement.speed;
+        }
+        // Otherwise we need to calculate how much power to put into the wheels
+        else
+        {
+            float forwardPower = amountToMove / movement.speed;
+
+            // Sanity check that forwardPower is less than 1
+            if (forwardPower > 1)
+                throw new System.Exception("Forward velocity shouldn't be greater than 1");
+
+            movement.PutMovement(forwardPower, 0);
+            // We have to invert y here because the grid is inverted from the world space
+            gridPos = new Vector2Int(gridPos.x + facing.x, gridPos.y - facing.y);
+            moving = false;
         }
     }
 
@@ -185,6 +215,17 @@ public class Algorithm : MonoBehaviour
     {
 
         DrawGrid(sensors.GetReadings());
+
+        if (getPath)
+        {
+            path = grid.BFS(gridPos, goalPos);
+            getPath = false;
+        }
+        
+        
+        
+
+        //Debug.Break();
         // Handles turning
         if (!turning && turnsToMake != 0)
         {
@@ -193,21 +234,32 @@ public class Algorithm : MonoBehaviour
             turning = true;
             Rotate();
         }
-        else if (turning) {
+        else if (turning)
+        {
             Rotate();
+        }
+        else if (moving)
+        {
+            MoveForward();
         }
         // Handles logic for when we need to decide what to do
         else
         {
-            List<Vector2Int> relPath = grid.BFS(gridPos, goalPos);
-            foreach (Vector2Int v in relPath) {
-                print(v);
-                // Rotate to the direction we need to go
-                while (v != facing) {
-                    Rotate(1);
-                }
-                Move(1, 0);
+            //Vector2Int v = path[0];
+            Vector2Int v = new Vector2Int(0, 1);
+            print(v);
+            // Rotate to the direction we need to go
+            if (v != facing)
+            {
+                turnsToMake = 1;
+                Rotate();
             }
+            else
+            {
+                MoveForward();
+            }
+            
+            
         }
     }
 }
