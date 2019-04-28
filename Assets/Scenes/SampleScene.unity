@@ -208,7 +208,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 68458553}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 4.42, z: 0}
+  m_LocalPosition: {x: 0, y: 3.87, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -794,7 +794,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1829679594}
         m_MethodName: GenerateWalls
-        m_Mode: 3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -894,6 +894,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 100
   height: 100
+  pathUColor: {r: 0.14365315, g: 1, b: 0, a: 0}
   emptyUColor: {r: 0.28773582, g: 0.58051854, b: 1, a: 1}
   wallUColor: {r: 1, g: 1, b: 1, a: 1}
   unseenUColor: {r: 0, g: 0, b: 0, a: 1}
@@ -1207,11 +1208,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 7324915762705254688, guid: f8d535c637d01a14e9d48fcac888b490, type: 3}
-  amount: 0
+  amount: 5
   xmin: -2
   xmax: 2
-  ymin: -3
-  ymax: 3.5
+  ymin: -2
+  ymax: 3
 --- !u!4 &1829679595
 Transform:
   m_ObjectHideFlags: 0
@@ -1421,3 +1422,4 @@ MonoBehaviour:
   moving: 0
   turnsToMake: 0
   facing: {x: 0, y: 1}
+  robotSize: 0

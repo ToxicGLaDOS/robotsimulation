@@ -12,7 +12,7 @@ public class WallGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        GenerateWalls();
     }
 
     // Update is called once per frame
@@ -21,7 +21,7 @@ public class WallGenerator : MonoBehaviour
         
     }
 
-    public void GenerateWalls(int amount) {
+    public void GenerateWalls() {
 
         for (int i = 0; i < walls.Count; i++) {
             GameObject go = walls[0];

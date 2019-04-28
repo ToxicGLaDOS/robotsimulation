@@ -40,21 +40,33 @@ public class Vertex
         return base.GetHashCode();
     }
 
-    public List<Vector2Int> CreatePath() {
+    public List<Vector2Int> CreateRelativePath() {
         List<Vector2Int> relativePath = new List<Vector2Int>();
         Vertex currentVert = this;
 
         while (currentVert.parent != null) {
             Vector2Int difference = currentVert.parent.position - currentVert.position;
+            difference.x = -difference.x;
+            // We don't need to invert the y values because y is already inverted due to the way images are indexed (topleft is (0, 0))
 
-            // We don't need to invert the x or y values because the x values are already inverted due to the way we're doing turing (left = 1, right = -1)
-            // and y is already inverted due to the way images are indexed (topleft is (0, 0))
-
-
-            relativePath.Add(difference);
+            relativePath.Insert(0, difference);
             currentVert = currentVert.parent;
         }
         
         return relativePath;
+    }
+
+    public List<Vector2Int> CreatePath()
+    {
+        List<Vector2Int> path = new List<Vector2Int>();
+        Vertex currentVert = this;
+
+        while (currentVert.parent != null) { 
+
+            path.Insert(0, currentVert.position);
+            currentVert = currentVert.parent;
+        }
+
+        return path;
     }
 }

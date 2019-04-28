@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Algorithm : MonoBehaviour
 {
@@ -55,7 +56,11 @@ public class Algorithm : MonoBehaviour
     // The amount we have left to move in world space units
     private float amountToMove = 0;
 
-    private bool getPath = true;
+    // The size of the robot in pixels according to the grid
+    private int robotSize;
+
+
+    private List<Vector2Int> nextInstructions = new List<Vector2Int>();
 
     // Start is called before the first frame update
     void Start()
@@ -83,7 +88,9 @@ public class Algorithm : MonoBehaviour
         grid.SetPixel(goalPos.x, goalPos.y, GridMap.PixelStates.GOAL);
         grid.SetPixel(gridPos.x, gridPos.y, GridMap.PixelStates.ROBOT);
 
-        path = grid.BFS(gridPos, goalPos);
+        // We round up to make sure we don't hit anything
+        robotSize = (int)Mathf.Ceil(GetComponent<CircleCollider2D>().radius / gridPixelWidth) + 2;
+
     }
 
     void DrawGrid(float[] readings) {
@@ -154,7 +161,7 @@ public class Algorithm : MonoBehaviour
             {
                 turning = false;
                 turnsToMake--;
-                facing = RotateVector(facing, 1);
+                facing = RotateVector(facing, -1);
             }
         }
         // Turning right
@@ -167,7 +174,7 @@ public class Algorithm : MonoBehaviour
             {
                 turning = false;
                 turnsToMake++;
-                facing = RotateVector(facing, -1);
+                facing = RotateVector(facing, 1);
             }
         }
         else {
@@ -214,7 +221,7 @@ public class Algorithm : MonoBehaviour
 
         DrawGrid(sensors.GetReadings());
 
-        
+
         //Debug.Break();
         // Handles turning
         if (!turning && turnsToMake != 0)
@@ -235,17 +242,23 @@ public class Algorithm : MonoBehaviour
         // Handles logic for when we need to decide what to do
         else
         {
-            //Vector2Int v = path[0];
-            Vector2Int v = new Vector2Int(0, 1);
+            if(nextInstructions.Count == 0)
+            {
+                nextInstructions.AddRange(grid.BFS(gridPos, goalPos, robotSize).Take(3));
+            }
+
+            Vector2Int nextInstruction = nextInstructions[0];
+            print(nextInstruction);
             // Rotate to the direction we need to go
-            if (v != facing)
+            if (nextInstruction != facing)
             {
                 
-                turnsToMake = 1;
+                turnsToMake = -1;
                 Rotate();
             }
             else
             {
+                
                 // We need to move one grid pixel, so if we're facing right or left we need to go one pixel width
                 if (facing == Vector2Int.left || facing == Vector2Int.right)
                     amountToMove = gridPixelWidth;
@@ -254,6 +267,7 @@ public class Algorithm : MonoBehaviour
                     amountToMove = gridPixelHeight;
                 moving = true;
                 MoveForward();
+                nextInstructions.RemoveAt(0);
             }
         }
     }

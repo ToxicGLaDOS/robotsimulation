@@ -12,13 +12,16 @@ public class GridMap : MonoBehaviour
 
     public int width, height;
 
-
+    public UnityEngine.Color pathCenterUColor;
+    public UnityEngine.Color pathUColor;
     public UnityEngine.Color emptyUColor;
     public UnityEngine.Color wallUColor;
     public UnityEngine.Color unseenUColor;
     public UnityEngine.Color robotUColor;
     public UnityEngine.Color goalUColor;
 
+    private System.Drawing.Color pathCenterColor;
+    private System.Drawing.Color pathColor;
     private System.Drawing.Color emptyColor;
     private System.Drawing.Color wallColor;
     private System.Drawing.Color unseenColor;
@@ -39,6 +42,8 @@ public class GridMap : MonoBehaviour
         unseenColor = System.Drawing.Color.FromArgb((int)(unseenUColor.r*255), (int)(unseenUColor.g*255), (int)(unseenUColor.b*255));
         robotColor = System.Drawing.Color.FromArgb((int)(robotUColor.r*255), (int)(robotUColor.g*255), (int)(robotUColor.b*255));
         goalColor = System.Drawing.Color.FromArgb((int)(goalUColor.r*255), (int)(goalUColor.g*255), (int)(goalUColor.b*255));
+        pathColor = System.Drawing.Color.FromArgb((int)(pathUColor.r * 255), (int)(pathUColor.g * 255), (int)(pathUColor.b * 255));
+        pathCenterColor = System.Drawing.Color.FromArgb((int)(pathCenterUColor.r * 255), (int)(pathCenterUColor.g * 255), (int)(pathCenterUColor.b * 255));
 
         image = new Bitmap(width, height);
         for (int x = 0; x < width; x++)
@@ -91,7 +96,32 @@ public class GridMap : MonoBehaviour
         {
             image.SetPixel(x, y, color);
         }
-    } 
+    }
+
+    public void DrawPath(List<Vector2Int> path, int size) {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if(image.GetPixel(x,y) == pathColor || image.GetPixel(x,y) == pathCenterColor)
+                    SetPixel(x, y, PixelStates.UNSEEN);
+            }
+        }
+
+        foreach (Vector2Int point in path) {
+            
+            for (int x = point.x - size / 2; x < point.x + size / 2; x++)
+            {
+                for (int y = point.y - size / 2; y < point.y + size / 2; y++)
+                {
+                    image.SetPixel(x, y, pathColor);
+                }
+            }
+            
+            image.SetPixel(point.x, point.y, pathCenterColor);
+        }
+    }
+
     public static List<Vector2Int> bresenham(int x, int y, int x2, int y2)
     {
         List<Vector2Int> points = new List<Vector2Int>();
@@ -131,7 +161,7 @@ public class GridMap : MonoBehaviour
         return points;
     }
 
-    public List<Vector2Int> BFS(Vector2Int start, Vector2Int end) {
+    public List<Vector2Int> BFS(Vector2Int start, Vector2Int end, int size) {
         //long startTime = DateTime.Now.Ticks;
         Queue<Vertex> queue = new Queue<Vertex>();
         HashSet<Vector2Int> discovered = new HashSet<Vector2Int>();
@@ -149,12 +179,13 @@ public class GridMap : MonoBehaviour
             {
                 //print("Vertex count: " + vertexCount);
                 //print("total time: " + ((DateTime.Now.Ticks - startTime) / 10000000.0f));
-                List<Vector2Int> relativePath = vertex.CreatePath();
+                DrawPath(vertex.CreatePath(), size);
+                List<Vector2Int> relativePath = vertex.CreateRelativePath();
                 return relativePath;
 
             }
 
-            foreach (Vertex w in Adjacent(vertex, discovered))
+            foreach (Vertex w in Adjacent(vertex, discovered, size))
             {
                 discovered.Add(w.position);
                 queue.Enqueue(w);
@@ -165,7 +196,26 @@ public class GridMap : MonoBehaviour
         return null;
     }
 
-    private List<Vertex> Adjacent(Vertex v, HashSet<Vector2Int> discovered) {
+    private bool SqaureIntersection(Vector2Int center, int size) {
+        for (int x = center.x - size / 2; x < center.x + size / 2; x++)
+        {
+            for(int y = center.y - size / 2; y < center.y + size / 2; y++)
+            {
+                // If out of bounds return there is a collision
+                if (x < 0 || x >= width || y < 0 || y >= height)
+                    return true;
+                // If any pixel is a wall then return true
+                if (image.GetPixel(x, y) == wallColor)
+                    return true;
+            }
+        }
+
+
+        // If we made it through return false
+        return false;
+    }
+
+    private List<Vertex> Adjacent(Vertex v, HashSet<Vector2Int> discovered, int size) {
         List<Vertex> adj = new List<Vertex>();
         Vector2Int right = v.position + new Vector2Int(1, 0);
         Vector2Int up = v.position + new Vector2Int(0, -1);
@@ -173,16 +223,16 @@ public class GridMap : MonoBehaviour
         Vector2Int down = v.position + new Vector2Int(0, 1);
 
         // For each right,left,up,down we check to make sure it hasn't been discovered yet, then check to make sure its inbounds, then make sure it isn't a wall.
-        if (!discovered.Contains(right) && right.x < width && image.GetPixel(right.x, right.y) != wallColor) {
+        if (!discovered.Contains(right) && !SqaureIntersection(right, size)) {
             adj.Add(new Vertex(right, v));
         }
-        if (!discovered.Contains(up) && up.y >= 0 && image.GetPixel(up.x, up.y) != wallColor) {
+        if (!discovered.Contains(up) && !SqaureIntersection(up, size)) {
             adj.Add(new Vertex(up, v));
         }
-        if (!discovered.Contains(left) && left.x >= 0 && image.GetPixel(left.x, left.y) != wallColor) {
+        if (!discovered.Contains(left) && !SqaureIntersection(left, size)) {
             adj.Add(new Vertex(left, v));
         }
-        if (!discovered.Contains(down) && down.y < height && image.GetPixel(down.x, down.y) != wallColor) {
+        if (!discovered.Contains(down) && !SqaureIntersection(down, size)) {
             adj.Add(new Vertex(down, v));
         }
         return adj;
