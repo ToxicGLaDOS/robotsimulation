@@ -14,7 +14,7 @@ public class Algorithm : MonoBehaviour
 
        
     // The width and height in unity units of one pixel in the grid
-    private float gridPixelWidth, gridPixelHeight;
+    public float gridPixelWidth, gridPixelHeight;
 
     // A reference to the goal so we can get its position to calibrate the grid
     public Goal goal;
@@ -54,10 +54,10 @@ public class Algorithm : MonoBehaviour
     private List<Vector2Int> path;
 
     // The amount we have left to move in world space units
-    private float amountToMove = 0;
+    public float amountToMove = 0;
 
     // The size of the robot in pixels according to the grid
-    private int robotSize;
+    public Vector2Int robotSize;
 
 
     private List<Vector2Int> nextInstructions = new List<Vector2Int>();
@@ -68,9 +68,11 @@ public class Algorithm : MonoBehaviour
         movement = GetComponent<Movement>();
         sensors = GetComponent<Sensors>();
 
-        xmin = wallGen.xmin;
+        //xmin = wallGen.xmin;
+        xmin = -5;
         ymin = -5;
-        xmax = wallGen.xmax;
+        //xmax = wallGen.xmax;
+        xmax = 5;
         ymax = 5;
 
         // Hardcoded to 5% error allowance
@@ -89,8 +91,11 @@ public class Algorithm : MonoBehaviour
         grid.SetPixel(gridPos.x, gridPos.y, GridMap.PixelStates.ROBOT);
 
         // We round up to make sure we don't hit anything
-        robotSize = (int)Mathf.Ceil(GetComponent<CircleCollider2D>().radius / gridPixelWidth) + 1;
+        robotSize = new Vector2Int((int)Mathf.Ceil(GetComponent<CircleCollider2D>().radius / gridPixelWidth), (int)Mathf.Ceil(GetComponent<CircleCollider2D>().radius / gridPixelHeight));
+        robotSize.x += 4;
+        robotSize.y += 4;
 
+        GetComponent<BoxCollider2D>().size = new Vector2(robotSize.x * gridPixelWidth, robotSize.y * gridPixelHeight);
     }
 
     void DrawGrid(float[] readings) {
@@ -265,11 +270,10 @@ public class Algorithm : MonoBehaviour
         {
             if(nextInstructions.Count == 0)
             {
-                nextInstructions.AddRange(grid.BFS(gridPos, goalPos, robotSize).Take(3));
+                nextInstructions.AddRange(grid.BFS(gridPos, goalPos, robotSize).Take(1));
             }
 
             Vector2Int nextInstruction = nextInstructions[0];
-            print(nextInstruction);
             // Rotate to the direction we need to go
             if (nextInstruction != facing)
             {
@@ -286,6 +290,7 @@ public class Algorithm : MonoBehaviour
                 else
                     amountToMove = gridPixelHeight;
                 moving = true;
+                print(nextInstruction);
                 MoveForward();
                 nextInstructions.RemoveAt(0);
             }

@@ -98,7 +98,7 @@ public class GridMap : MonoBehaviour
         }
     }
 
-    public void DrawPath(List<Vector2Int> path, int size) {
+    public void DrawPath(List<Vector2Int> path, Vector2Int size) {
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -110,9 +110,9 @@ public class GridMap : MonoBehaviour
 
         foreach (Vector2Int point in path) {
             
-            for (int x = point.x - size / 2; x < point.x + size / 2; x++)
+            for (int x = point.x - size.x / 2; x < point.x + size.x / 2; x++)
             {
-                for (int y = point.y - size / 2; y < point.y + size / 2; y++)
+                for (int y = point.y - size.y / 2; y < point.y + size.y / 2; y++)
                 {
                     image.SetPixel(x, y, pathColor);
                 }
@@ -161,7 +161,7 @@ public class GridMap : MonoBehaviour
         return points;
     }
 
-    public List<Vector2Int> BFS(Vector2Int start, Vector2Int end, int size) {
+    public List<Vector2Int> BFS(Vector2Int start, Vector2Int end, Vector2Int size) {
         //long startTime = DateTime.Now.Ticks;
         Queue<Vertex> queue = new Queue<Vertex>();
         HashSet<Vector2Int> discovered = new HashSet<Vector2Int>();
@@ -196,10 +196,10 @@ public class GridMap : MonoBehaviour
         return null;
     }
 
-    private bool SqaureIntersection(Vector2Int center, int size) {
-        for (int x = center.x - size / 2; x < center.x + size / 2; x++)
+    private bool SqaureIntersection(Vector2Int center, Vector2Int size) {
+        for (int x = center.x - size.x / 2; x < center.x + size.x / 2; x++)
         {
-            for(int y = center.y - size / 2; y < center.y + size / 2; y++)
+            for(int y = center.y - size.y / 2; y < center.y + size.y / 2; y++)
             {
                 // If out of bounds return there is a collision
                 if (x < 0 || x >= width || y < 0 || y >= height)
@@ -215,7 +215,7 @@ public class GridMap : MonoBehaviour
         return false;
     }
 
-    private List<Vertex> Adjacent(Vertex v, HashSet<Vector2Int> discovered, int size) {
+    private List<Vertex> Adjacent(Vertex v, HashSet<Vector2Int> discovered, Vector2Int size) {
         List<Vertex> adj = new List<Vertex>();
         Vector2Int right = v.position + new Vector2Int(1, 0);
         Vector2Int up = v.position + new Vector2Int(0, -1);
