@@ -52,7 +52,6 @@ public class GridMap : MonoBehaviour
 
         for (int x = x1, y = y1; x <= x2; x++)
         {
-            print("(" + x + "," + y + ")\n");
 
             points.Add(new Vector2(x, y));
 

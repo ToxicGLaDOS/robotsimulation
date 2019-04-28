@@ -1386,9 +1386,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 0.056
-  maxAngleDelta: 1.5
+  maxAngleDelta: 0.8
   angleFuzzFactor: 0
-  movementFuzzFactor: 0.64
+  movementFuzzFactor: 0
   forward: 0
   turn: 0
 --- !u!114 &2025124442
@@ -1404,4 +1404,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grid: {fileID: 1490350619}
-  turnAmount: 0
+  turnTimer: 0
+  assumedRotation: 0
+  turning: 0
