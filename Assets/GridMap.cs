@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System;
 using UnityEngine.UI;
 
 public class GridMap : MonoBehaviour
@@ -47,10 +48,6 @@ public class GridMap : MonoBehaviour
                 SetPixel(x, y, PixelStates.UNSEEN);
             }
         }
-        
-
-        List<Vector2Int> path = BFS(new Vector2Int(0, 0), new Vector2Int(10, 10));
-
     }
 
     // Update is called once per frame
@@ -135,19 +132,25 @@ public class GridMap : MonoBehaviour
     }
 
     public List<Vector2Int> BFS(Vector2Int start, Vector2Int end) {
+        long startTime = DateTime.Now.Ticks;
+        print("start BFS: " + startTime);
         Queue<Vertex> queue = new Queue<Vertex>();
         List<Vertex> discovered = new List<Vertex>();
 
         // Add the first node to the queue
         Vertex begin = new Vertex(start, null);
         queue.Enqueue(begin);
-
+        int vertexCount = 0;
         // While the queue is not empty
         while (queue.Count > 0)
         {
             Vertex vertex = queue.Dequeue();
+            vertexCount++;
             if (vertex.position == end)
             {
+                print("Vertex count: " + vertexCount);
+                print("end BFS: " + DateTime.Now.Ticks);
+                print("total time: " + ((DateTime.Now.Ticks - startTime) / 10000000.0f));
                 return vertex.CreatePath();
             }
 

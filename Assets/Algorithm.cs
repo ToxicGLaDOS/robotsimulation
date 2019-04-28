@@ -82,6 +82,8 @@ public class Algorithm : MonoBehaviour
 
         grid.SetPixel(goalPos.x, goalPos.y, GridMap.PixelStates.GOAL);
         grid.SetPixel(gridPos.x, gridPos.y, GridMap.PixelStates.ROBOT);
+
+        path = grid.BFS(gridPos, goalPos);
     }
 
     void DrawGrid(float[] readings) {
