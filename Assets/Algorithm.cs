@@ -116,14 +116,10 @@ public class Algorithm : MonoBehaviour
 
     void MoveForward() {
         
-
-        print("amount to move: " + amountToMove);
-
         // If the amount we need to move is greater than the max we can move in one frame
         // then we just move at full speed for this frame and subtract the amount we just moved from the amount we have left to do
         if( amountToMove > movement.speed)
         {
-            print("movement speed: " + movement.speed);
             movement.PutMovement(1, 0);
             amountToMove -= movement.speed;
         }
@@ -141,11 +137,11 @@ public class Algorithm : MonoBehaviour
             gridPos = new Vector2Int(gridPos.x + facing.x, gridPos.y - facing.y);
             moving = false;
 
-            print("ended movment");
         }
     }
 
     void Rotate() {
+        
         // Turning left 
         if (turnsToMake > 0)
         {
@@ -216,11 +212,6 @@ public class Algorithm : MonoBehaviour
 
         DrawGrid(sensors.GetReadings());
 
-        if (getPath)
-        {
-            //path = grid.BFS(gridPos, goalPos);
-            getPath = false;
-        }
         
         //Debug.Break();
         // Handles turning
@@ -262,8 +253,6 @@ public class Algorithm : MonoBehaviour
                 moving = true;
                 MoveForward();
             }
-            
-            
         }
     }
 }
