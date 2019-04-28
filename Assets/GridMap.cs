@@ -88,7 +88,6 @@ public class GridMap : MonoBehaviour
                 break;
             default:
                 throw new System.Exception("You can't use a pixel state that isn't implemented");
-                break;
         }
 
         if (x > 0 && x < width && y > 0 && y < height && image.GetPixel(x,y) != robotColor)

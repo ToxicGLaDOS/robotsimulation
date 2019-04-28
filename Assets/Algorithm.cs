@@ -115,17 +115,15 @@ public class Algorithm : MonoBehaviour
     }
 
     void MoveForward() {
-        // We need to move one grid pixel, so if we're facing right or left we need to go one pixel width
-        if (facing == Vector2Int.left || facing == Vector2Int.right)
-            amountToMove = gridPixelWidth;
-        // If we're facing up or down we need to go one pixel height
-        else
-            amountToMove = gridPixelHeight;
+        
+
+        print("amount to move: " + amountToMove);
 
         // If the amount we need to move is greater than the max we can move in one frame
         // then we just move at full speed for this frame and subtract the amount we just moved from the amount we have left to do
         if( amountToMove > movement.speed)
         {
+            print("movement speed: " + movement.speed);
             movement.PutMovement(1, 0);
             amountToMove -= movement.speed;
         }
@@ -142,6 +140,8 @@ public class Algorithm : MonoBehaviour
             // We have to invert y here because the grid is inverted from the world space
             gridPos = new Vector2Int(gridPos.x + facing.x, gridPos.y - facing.y);
             moving = false;
+
+            print("ended movment");
         }
     }
 
@@ -218,13 +218,10 @@ public class Algorithm : MonoBehaviour
 
         if (getPath)
         {
-            path = grid.BFS(gridPos, goalPos);
+            //path = grid.BFS(gridPos, goalPos);
             getPath = false;
         }
         
-        
-        
-
         //Debug.Break();
         // Handles turning
         if (!turning && turnsToMake != 0)
@@ -247,15 +244,22 @@ public class Algorithm : MonoBehaviour
         {
             //Vector2Int v = path[0];
             Vector2Int v = new Vector2Int(0, 1);
-            print(v);
             // Rotate to the direction we need to go
             if (v != facing)
             {
+                
                 turnsToMake = 1;
                 Rotate();
             }
             else
             {
+                // We need to move one grid pixel, so if we're facing right or left we need to go one pixel width
+                if (facing == Vector2Int.left || facing == Vector2Int.right)
+                    amountToMove = gridPixelWidth;
+                // If we're facing up or down we need to go one pixel height
+                else
+                    amountToMove = gridPixelHeight;
+                moving = true;
                 MoveForward();
             }
             

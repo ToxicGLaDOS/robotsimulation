@@ -1416,5 +1416,8 @@ MonoBehaviour:
   gridPos: {x: 0, y: 0}
   turnTimer: 0
   assumedRotation: 0
+  maxLengthToWall: 0
   turning: 0
-  turnsToMake: 1
+  moving: 0
+  turnsToMake: 0
+  facing: {x: 0, y: 1}
