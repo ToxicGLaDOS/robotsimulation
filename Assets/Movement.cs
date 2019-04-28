@@ -22,7 +22,7 @@ public class Movement : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         float angle = turn * 360;
         float rotationAmount = turn * maxAngleDelta + maxAngleDelta * Random.Range(-angleFuzzFactor, angleFuzzFactor);

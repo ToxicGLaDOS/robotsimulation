@@ -14,7 +14,12 @@ public class Algorithm : MonoBehaviour
 
     // The amount we think we're rotated
     public float assumedRotation = 0;
+
+
+    // Variable to mark that we're turning and shouldn't do anything until it's done
     public bool turning = false;
+
+
 
     Vector2 gridPos = new Vector2(50,0);
     int turnsToMake = 0;
@@ -82,7 +87,7 @@ public class Algorithm : MonoBehaviour
     // turnTo 1 means left turnTo -1 means right.
     // 73 frames to turn 90 deg
     // Update is called once per frame
-    void LateUpdate()
+    void FixedUpdate()
     {
 
         DrawGrid(sensors.GetReadings());
