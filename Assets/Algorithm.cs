@@ -14,7 +14,7 @@ public class Algorithm : MonoBehaviour
 
        
     // The width and height in unity units of one pixel in the grid
-    public float gridPixelWidth, gridPixelHeight;
+    private float gridPixelWidth, gridPixelHeight;
 
     // A reference to the goal so we can get its position to calibrate the grid
     public Goal goal;
@@ -23,7 +23,7 @@ public class Algorithm : MonoBehaviour
     public Vector2Int gridPos;
 
     // The number of frames left we need to turn for
-    public int turnTimer = 0;
+    public float turnTimer = 0;
 
     // The amount we think we're rotated
     public float assumedRotation = 0;
@@ -89,7 +89,7 @@ public class Algorithm : MonoBehaviour
         grid.SetPixel(gridPos.x, gridPos.y, GridMap.PixelStates.ROBOT);
 
         // We round up to make sure we don't hit anything
-        robotSize = (int)Mathf.Ceil(GetComponent<CircleCollider2D>().radius / gridPixelWidth) + 2;
+        robotSize = (int)Mathf.Ceil(GetComponent<CircleCollider2D>().radius / gridPixelWidth) + 1;
 
     }
 
@@ -154,9 +154,19 @@ public class Algorithm : MonoBehaviour
         // Turning left 
         if (turnsToMake > 0)
         {
-            movement.PutMovement(0, 1);
-            assumedRotation += movement.maxAngleDelta;
-            turnTimer--;
+            float amountRotated;
+            if(turnTimer > 1)
+            {
+                movement.PutMovement(0, 1);
+                amountRotated = 1;
+            }
+            else
+            {
+                movement.PutMovement(0, turnTimer);
+                amountRotated = turnTimer;
+            }
+            assumedRotation += movement.maxAngleDelta * amountRotated;
+            turnTimer -= amountRotated;
             if (turnTimer == 0)
             {
                 turning = false;
@@ -167,9 +177,19 @@ public class Algorithm : MonoBehaviour
         // Turning right
         else if (turnsToMake < 0)
         {
-            movement.PutMovement(0, 1);
-            assumedRotation += movement.maxAngleDelta;
-            turnTimer--;
+            float amountRotated;
+            if (turnTimer > 1)
+            {
+                movement.PutMovement(0, 1);
+                amountRotated = 1;
+            }
+            else
+            {
+                movement.PutMovement(0, turnTimer);
+                amountRotated = turnTimer;
+            }
+            assumedRotation += movement.maxAngleDelta * amountRotated;
+            turnTimer -= amountRotated;
             if (turnTimer == 0)
             {
                 turning = false;
@@ -215,6 +235,13 @@ public class Algorithm : MonoBehaviour
         }
     }
 
+    void Turn(int direction) {
+        turnTimer = (Mathf.PI / 2) / (Mathf.Deg2Rad * movement.maxAngleDelta);
+        turning = true;
+        turnsToMake += direction;
+        Rotate();
+    }
+
     // turnTo 1 means left turnTo -1 means right.
     void FixedUpdate()
     {
@@ -224,14 +251,8 @@ public class Algorithm : MonoBehaviour
 
         //Debug.Break();
         // Handles turning
-        if (!turning && turnsToMake != 0)
-        {
-            // Set the turnTimer to the the number of frames it takes to turn 90 degrees if we move precisely
-            turnTimer = Mathf.RoundToInt((Mathf.PI / 2) / (Mathf.Deg2Rad * movement.maxAngleDelta));
-            turning = true;
-            Rotate();
-        }
-        else if (turning)
+
+        if (turning)
         {
             Rotate();
         }
@@ -252,9 +273,8 @@ public class Algorithm : MonoBehaviour
             // Rotate to the direction we need to go
             if (nextInstruction != facing)
             {
-                
-                turnsToMake = -1;
-                Rotate();
+
+                Turn(-1);
             }
             else
             {
