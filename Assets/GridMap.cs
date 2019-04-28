@@ -132,10 +132,9 @@ public class GridMap : MonoBehaviour
     }
 
     public List<Vector2Int> BFS(Vector2Int start, Vector2Int end) {
-        long startTime = DateTime.Now.Ticks;
-        print("start BFS: " + startTime);
+        //long startTime = DateTime.Now.Ticks;
         Queue<Vertex> queue = new Queue<Vertex>();
-        List<Vertex> discovered = new List<Vertex>();
+        HashSet<Vector2Int> discovered = new HashSet<Vector2Int>();
 
         // Add the first node to the queue
         Vertex begin = new Vertex(start, null);
@@ -148,15 +147,16 @@ public class GridMap : MonoBehaviour
             vertexCount++;
             if (vertex.position == end)
             {
-                print("Vertex count: " + vertexCount);
-                print("end BFS: " + DateTime.Now.Ticks);
-                print("total time: " + ((DateTime.Now.Ticks - startTime) / 10000000.0f));
-                return vertex.CreatePath();
+                //print("Vertex count: " + vertexCount);
+                //print("total time: " + ((DateTime.Now.Ticks - startTime) / 10000000.0f));
+                List<Vector2Int> relativePath = vertex.CreatePath();
+                return relativePath;
+
             }
 
             foreach (Vertex w in Adjacent(vertex, discovered))
             {
-                discovered.Add(w);
+                discovered.Add(w.position);
                 queue.Enqueue(w);
 
             }
@@ -165,25 +165,25 @@ public class GridMap : MonoBehaviour
         return null;
     }
 
-    private List<Vertex> Adjacent(Vertex v, List<Vertex> discovered) {
+    private List<Vertex> Adjacent(Vertex v, HashSet<Vector2Int> discovered) {
         List<Vertex> adj = new List<Vertex>();
-        Vertex right = new Vertex(v.position + new Vector2Int(1, 0), v);
-        Vertex up = new Vertex(v.position + new Vector2Int(0, -1), v);
-        Vertex left = new Vertex(v.position + new Vector2Int(-1, 0), v);
-        Vertex down = new Vertex(v.position + new Vector2Int(0, 1), v);
+        Vector2Int right = v.position + new Vector2Int(1, 0);
+        Vector2Int up = v.position + new Vector2Int(0, -1);
+        Vector2Int left = v.position + new Vector2Int(-1, 0);
+        Vector2Int down = v.position + new Vector2Int(0, 1);
 
         // For each right,left,up,down we check to make sure it hasn't been discovered yet, then check to make sure its inbounds, then make sure it isn't a wall.
-        if (!discovered.Contains(right) && right.position.x < width && image.GetPixel(right.position.x, right.position.y) != wallColor) {
-            adj.Add(right);
+        if (!discovered.Contains(right) && right.x < width && image.GetPixel(right.x, right.y) != wallColor) {
+            adj.Add(new Vertex(right, v));
         }
-        if (!discovered.Contains(up) && up.position.y >= 0 && image.GetPixel(up.position.x, up.position.y) != wallColor) {
-            adj.Add(up);
+        if (!discovered.Contains(up) && up.y >= 0 && image.GetPixel(up.x, up.y) != wallColor) {
+            adj.Add(new Vertex(up, v));
         }
-        if (!discovered.Contains(left) && left.position.x >= 0 && image.GetPixel(left.position.x, left.position.y) != wallColor) {
-            adj.Add(left);
+        if (!discovered.Contains(left) && left.x >= 0 && image.GetPixel(left.x, left.y) != wallColor) {
+            adj.Add(new Vertex(left, v));
         }
-        if (!discovered.Contains(down) && down.position.y < height && image.GetPixel(down.position.x, down.position.y) != wallColor) {
-            adj.Add(down);
+        if (!discovered.Contains(down) && down.y < height && image.GetPixel(down.x, down.y) != wallColor) {
+            adj.Add(new Vertex(down, v));
         }
         return adj;
     }
