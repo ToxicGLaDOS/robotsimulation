@@ -17,13 +17,18 @@ public class Timer : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (running)
         {
-            time += Time.deltaTime;
+            time += Time.fixedDeltaTime;
         }
         timerText.text = time.ToString("0.00");
+    }
+
+    public void Restart() {
+        time = 0;
+        running = false;
     }
 
     public void Stop() {

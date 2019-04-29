@@ -43,6 +43,8 @@ public class Algorithm : MonoBehaviour
     // Which way we're facing
     public Vector2Int facing = Vector2Int.up;
 
+    public bool running = true;
+
     // This value keeps track of how far off from the grid we think we are
     // this might happen, for example, because the grid is in 1 inch chunks, but we can only move in 1.5 inch increments
     private float error = 0;
@@ -56,7 +58,7 @@ public class Algorithm : MonoBehaviour
     // The size of the robot in pixels according to the grid
     public Vector2Int robotSize;
 
-
+    private Vector2 initalPosition;
     private List<Vector2Int> nextInstructions = new List<Vector2Int>();
 
     // Start is called before the first frame update
@@ -74,6 +76,8 @@ public class Algorithm : MonoBehaviour
 
         // Hardcoded to 5% error allowance
         maxLengthToWall = sensors.maxDist - sensors.maxDist * 0.05f;
+
+        initalPosition = transform.position;
 
         gridPixelWidth = (xmax - xmin) / grid.width;
         gridPixelHeight = (ymax - ymin) / grid.height;
@@ -205,6 +209,31 @@ public class Algorithm : MonoBehaviour
         
     }
 
+    public void Restart()
+    {
+
+        transform.position = initalPosition;
+        transform.rotation = Quaternion.identity;
+
+        int y = Mathf.RoundToInt((ymax - transform.position.y) / gridPixelHeight);
+
+        gridPos = new Vector2Int(grid.width / 2, y);
+
+        turnTimer = 0;
+        assumedRotation = 0;
+        turning = false;
+        moving = false;
+        turnsToMake = 0;
+        facing = Vector2Int.up;
+        running = true;
+        error = 0;
+        amountToMove = 0;
+
+        grid.Restart();
+
+   
+}
+
     private Vector2Int RotateVector(Vector2Int v, int direction) {
         if (direction == 1)
         {
@@ -271,7 +300,7 @@ public class Algorithm : MonoBehaviour
                 if(path == null || path.Count == 0)
                 {
                     movement.PutMovement(0, 0);
-                    this.enabled = false;
+                    running = false;
                     return;
                 }
                 nextInstructions.AddRange(path.Take(1));

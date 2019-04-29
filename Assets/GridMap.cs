@@ -98,6 +98,17 @@ public class GridMap : MonoBehaviour
         }
     }
 
+    public void Restart()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                SetPixel(x, y, PixelStates.UNSEEN);
+            }
+        }
+    }
+
     public void DrawPath(List<Vector2Int> path, Vector2Int size) {
         for (int x = 0; x < width; x++)
         {
