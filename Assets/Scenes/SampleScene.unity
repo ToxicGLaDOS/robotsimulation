@@ -155,7 +155,7 @@ MonoBehaviour:
   robot: {fileID: 2025124442}
   robotInitalPos: {x: 0, y: 0, z: 0}
   wallGen: {fileID: 1829679594}
-  numTrials: 10
+  numTrials: 100
   averageTime: 0
   totalTime: 0
   trialsRan: 0
@@ -1270,7 +1270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a196c40c616c0c14186e84a8e5052af9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fuzzFactor: 0.029
+  fuzzFactor: 0.05
   maxDist: 5
 --- !u!58 &2025124437
 CircleCollider2D:
@@ -1385,8 +1385,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 0.056
   maxAngleDelta: 1.5
-  angleFuzzFactor: 0.25
-  movementFuzzFactor: 0.25
+  angleFuzzFactor: 0.05
+  movementFuzzFactor: 0.05
   forward: 0
   turn: 0
 --- !u!114 &2025124442

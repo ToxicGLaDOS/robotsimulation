@@ -296,7 +296,6 @@ public class Algorithm : MonoBehaviour
                 {
                     movement.PutMovement(0, 0);
                     running = false;
-                    print(path);
                     return;
                 }
                 nextInstructions.AddRange(path.Take(1));
