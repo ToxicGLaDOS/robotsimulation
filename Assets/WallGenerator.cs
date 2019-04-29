@@ -5,7 +5,7 @@ using UnityEngine;
 public class WallGenerator : MonoBehaviour
 {
     public GameObject wall;
-    public int amount;
+    public int wallsPerLine;
     public float xmin, xmax, ymin, ymax;
 
     private List<GameObject> walls = new List<GameObject>();
@@ -30,12 +30,14 @@ public class WallGenerator : MonoBehaviour
         }
 
 
-        for (int i = 0; i < amount; i++) {
-            float x = Random.Range(xmin, xmax);
-            float y = Random.Range(ymin, ymax);
+        for (int i = 0; i < wallsPerLine; i++) {
+            for(float y = ymin; y < ymax; y += 2* wall.GetComponent<BoxCollider2D>().size.y * 1.5f)
+            {
+                float x = Random.Range(xmin, xmax);
 
-            GameObject go = Instantiate(wall, new Vector3(x, y, 0), Quaternion.identity);
-            walls.Add(go);
+                GameObject go = Instantiate(wall, new Vector3(x, y, 0), Quaternion.identity);
+                walls.Add(go);
+            }
         }
     }
 }

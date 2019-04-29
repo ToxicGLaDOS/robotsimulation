@@ -686,7 +686,7 @@ PrefabInstance:
     - target: {fileID: 7324915762705254691, guid: f8d535c637d01a14e9d48fcac888b490,
         type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7324915762705254691, guid: f8d535c637d01a14e9d48fcac888b490,
         type: 3}
@@ -728,7 +728,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1271912103
 RectTransform:
   m_ObjectHideFlags: 0
@@ -894,6 +894,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 100
   height: 100
+  pathCenterUColor: {r: 1, g: 0.31069663, b: 0, a: 0}
   pathUColor: {r: 0.14365315, g: 1, b: 0, a: 0}
   emptyUColor: {r: 0.28773582, g: 0.58051854, b: 1, a: 1}
   wallUColor: {r: 1, g: 1, b: 1, a: 1}
@@ -1225,7 +1226,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2025124435
 GameObject:
@@ -1238,6 +1239,7 @@ GameObject:
   - component: {fileID: 2025124439}
   - component: {fileID: 2025124438}
   - component: {fileID: 2025124437}
+  - component: {fileID: 2025124443}
   - component: {fileID: 2025124442}
   - component: {fileID: 2025124436}
   - component: {fileID: 2025124441}
@@ -1393,7 +1395,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 0.056
   maxAngleDelta: 1.5
-  angleFuzzFactor: 0
+  angleFuzzFactor: 0.468
   movementFuzzFactor: 0.64
   forward: 0
   turn: 0
@@ -1422,4 +1424,31 @@ MonoBehaviour:
   moving: 0
   turnsToMake: 0
   facing: {x: 0, y: 1}
-  robotSize: 0
+  amountToMove: 0
+  robotSize: {x: 0, y: 0}
+--- !u!61 &2025124443
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2025124435}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.64, y: 0.64}
+    newSize: {x: 0.64, y: 0.64}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.64, y: 0.64}
+  m_EdgeRadius: 0

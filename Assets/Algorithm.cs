@@ -50,9 +50,6 @@ public class Algorithm : MonoBehaviour
     // Where the goal is on the grid
     private Vector2Int goalPos;
 
-    // The path we are currently following
-    private List<Vector2Int> path;
-
     // The amount we have left to move in world space units
     public float amountToMove = 0;
 
@@ -176,7 +173,7 @@ public class Algorithm : MonoBehaviour
             {
                 turning = false;
                 turnsToMake--;
-                facing = RotateVector(facing, -1);
+                facing = RotateVector(facing, 1);
             }
         }
         // Turning right
@@ -185,21 +182,21 @@ public class Algorithm : MonoBehaviour
             float amountRotated;
             if (turnTimer > 1)
             {
-                movement.PutMovement(0, 1);
+                movement.PutMovement(0, -1);
                 amountRotated = 1;
             }
             else
             {
-                movement.PutMovement(0, turnTimer);
+                movement.PutMovement(0, -turnTimer);
                 amountRotated = turnTimer;
             }
-            assumedRotation += movement.maxAngleDelta * amountRotated;
+            assumedRotation -= movement.maxAngleDelta * amountRotated;
             turnTimer -= amountRotated;
             if (turnTimer == 0)
             {
                 turning = false;
                 turnsToMake++;
-                facing = RotateVector(facing, 1);
+                facing = RotateVector(facing, -1);
             }
         }
         else {
@@ -270,15 +267,34 @@ public class Algorithm : MonoBehaviour
         {
             if(nextInstructions.Count == 0)
             {
-                nextInstructions.AddRange(grid.BFS(gridPos, goalPos, robotSize).Take(1));
+                List<Vector2Int> path = grid.BFS(gridPos, goalPos, robotSize);
+                if(path == null || path.Count == 0)
+                {
+                    movement.PutMovement(0, 0);
+                    this.enabled = false;
+                    return;
+                }
+                nextInstructions.AddRange(path.Take(1));
             }
-
+            /*
+            if(nextInstructions.Count == 0)
+            {
+                movement.PutMovement(0, 0);
+                return;
+            }
+            */
             Vector2Int nextInstruction = nextInstructions[0];
             // Rotate to the direction we need to go
             if (nextInstruction != facing)
             {
-
-                Turn(-1);
+                if (RotateVector(facing, 1) == nextInstruction)
+                {
+                    Turn(1);
+                }
+                else{
+                    Turn(-1);
+                }
+                    
             }
             else
             {
@@ -290,7 +306,7 @@ public class Algorithm : MonoBehaviour
                 else
                     amountToMove = gridPixelHeight;
                 moving = true;
-                print(nextInstruction);
+                
                 MoveForward();
                 nextInstructions.RemoveAt(0);
             }
