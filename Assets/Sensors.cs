@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class Sensors : MonoBehaviour
 {
-    public float[] readings = new float[16];
-
+    private float[] readings = new float[8];
 
     [Range(0,1)]
     public float fuzzFactor;
@@ -13,7 +12,7 @@ public class Sensors : MonoBehaviour
 
 
     public float[] GetReadings() {
-        for (int i = 0; i < 16; i++)
+        for (int i = 0; i < 8; i++)
         {
             float angle = i * 2 * Mathf.PI / 16 + Mathf.Deg2Rad * transform.rotation.eulerAngles.z;
             Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));

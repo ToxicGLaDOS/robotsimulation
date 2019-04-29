@@ -25,7 +25,7 @@ public class Goal : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!robot.running)
+        if (robot != null && !robot.running)
         {
             totalTime += 120;
             Restart();

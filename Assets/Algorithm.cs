@@ -296,17 +296,12 @@ public class Algorithm : MonoBehaviour
                 {
                     movement.PutMovement(0, 0);
                     running = false;
+                    print(path);
                     return;
                 }
                 nextInstructions.AddRange(path.Take(1));
             }
-            /*
-            if(nextInstructions.Count == 0)
-            {
-                movement.PutMovement(0, 0);
-                return;
-            }
-            */
+
             Vector2Int nextInstruction = nextInstructions[0];
             // Rotate to the direction we need to go
             if (nextInstruction != facing)
