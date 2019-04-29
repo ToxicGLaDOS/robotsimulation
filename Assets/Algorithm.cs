@@ -45,10 +45,6 @@ public class Algorithm : MonoBehaviour
 
     public bool running = true;
 
-    // This value keeps track of how far off from the grid we think we are
-    // this might happen, for example, because the grid is in 1 inch chunks, but we can only move in 1.5 inch increments
-    private float error = 0;
-
     // Where the goal is on the grid
     private Vector2Int goalPos;
 
@@ -226,7 +222,6 @@ public class Algorithm : MonoBehaviour
         turnsToMake = 0;
         facing = Vector2Int.up;
         running = true;
-        error = 0;
         amountToMove = 0;
 
         grid.Restart();

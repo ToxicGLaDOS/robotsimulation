@@ -155,7 +155,7 @@ MonoBehaviour:
   robot: {fileID: 2025124442}
   robotInitalPos: {x: 0, y: 0, z: 0}
   wallGen: {fileID: 1829679594}
-  numTrials: 5
+  numTrials: 10
   averageTime: 0
   totalTime: 0
   trialsRan: 0
@@ -1403,7 +1403,7 @@ MonoBehaviour:
   speed: 0.056
   maxAngleDelta: 1.5
   angleFuzzFactor: 0
-  movementFuzzFactor: 0.64
+  movementFuzzFactor: 0
   forward: 0
   turn: 0
 --- !u!114 &2025124442

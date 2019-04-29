@@ -23,15 +23,17 @@ public class WallGenerator : MonoBehaviour
 
     public void GenerateWalls() {
 
-        for (int i = 0; i < walls.Count; i++) {
+        int initalCount = walls.Count;
+        for (int i = 0; i < initalCount; i++) {
             GameObject go = walls[0];
-            Destroy(go);
             walls.RemoveAt(0);
+            Destroy(go);
+            
         }
-
-
-        for (int i = 0; i < wallsPerLine; i++) {
-            for(float y = ymin; y < ymax; y += 2* wall.GetComponent<BoxCollider2D>().size.y * 1.5f)
+        
+        for(float y = ymin; y < ymax; y += 2* wall.GetComponent<BoxCollider2D>().size.y * 1.5f)
+        {
+            for (int i = 0; i < wallsPerLine; i++)
             {
                 float x = Random.Range(xmin, xmax);
 

@@ -27,6 +27,7 @@ public class Goal : MonoBehaviour
     {
         if (!robot.running)
         {
+            totalTime += 120;
             Restart();
         }
     }
